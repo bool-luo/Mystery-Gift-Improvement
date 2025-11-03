@@ -4,10 +4,9 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev:client": "vite --host --port 3000",
-    "dev": "pnpm dev:client",
-    "build:client": "vite build --outDir dist/static",
-    "build": "rmdir /s /q dist 2>nul || del /f/s/q dist 2>nul && pnpm build:client && copy package.json dist && echo. > dist/build.flag"
+    "dev": "vite --host --port 3000",
+    "build": "vite build --outDir dist",
+    "preview": "vite preview --port 4173"
   },
   "dependencies": {
     "clsx": "^2.1.1",
