@@ -12,7 +12,6 @@ function getPlugins() {
 }
 
 export default defineConfig({
-  base: './', // ✅ 添加这一行，关键！
   plugins: getPlugins(),
   server: {
     host: true,
@@ -21,7 +20,7 @@ export default defineConfig({
       'ngrok-skip-browser-warning': 'true'
     },
     allowedHosts: [
-      'unbewitchingly-untouching-kaylin.ngrok-free.dev'
+      'unbewitchingly-untouching-kaylin.ngrok-free.dev' // 允许 ngrok 域名访问
     ]
   }
 });
