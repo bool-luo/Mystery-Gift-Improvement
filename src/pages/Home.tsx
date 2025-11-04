@@ -137,7 +137,7 @@ export default function Home() {
         audioRef.current = null;
       }
     };
-  }, [currentMusicIndex, isPlayingMusic]);
+  }, [currentMusicIndex]); // 移除isPlayingMusic依赖，避免每次切换播放状态时重新创建音频实例
   
   // 切换音乐播放状态
   const toggleMusic = () => {
@@ -204,24 +204,16 @@ export default function Home() {
     // 固定使用手机友好的消息框尺寸
     const messageMaxWidth = 150;
     const messageMinWidth = 100;
+    const messageHeight = 100; // 消息框的最小高度
+    const bottomPadding = 120; // 底部额外留出空间，避免被音乐控制按钮遮挡
+    
     const maxX = containerRect.width - messageMaxWidth;
-    const maxY = containerRect.height - 80; // 80是消息框的最小高度
+    const maxY = containerRect.height - messageHeight - bottomPadding;
     
     // 生成消息数据，保持原有的80条消息
     const messagesData = Array.from({ length: 80 }, (_, index) => {
-      // 使用加权随机分布，确保消息在整个屏幕均匀分布，避免右侧过于空旷
-      let x;
-      const randomFactor = Math.random();
-      if (randomFactor > 0.7) {
-        // 30%的概率分布在右侧1/3区域
-        x = maxX * 0.67 + Math.random() * (maxX * 0.33);
-      } else if (randomFactor > 0.4) {
-        // 30%的概率分布在中间1/3区域
-        x = maxX * 0.33 + Math.random() * (maxX * 0.33);
-      } else {
-        // 40%的概率分布在左侧1/3区域
-        x = Math.random() * (maxX * 0.33);
-      }
+      // 简单随机分布
+      let x = Math.random() * maxX;
       
       return {
         id: index,
@@ -294,11 +286,15 @@ export default function Home() {
     
     const container = containerRef.current;
     const containerRect = container.getBoundingClientRect();
-    const messageWidth = 200; // 消息框的最大宽度
+    // 使用与generateMessageElements一致的尺寸定义
+    const messageMaxWidth = 150;
+    const messageMinWidth = 100;
+    const messageHeight = 100; // 消息框的最小高度
+    const bottomPadding = 120; // 底部额外留出空间，避免被音乐控制按钮遮挡
     
     // 计算最大X和Y值
-    const maxX = containerRect.width - messageWidth;
-    const maxY = containerRect.height - 100;
+    const maxX = containerRect.width - messageMaxWidth;
+    const maxY = containerRect.height - messageHeight - bottomPadding;
     
     // 创建新的消息数组，保留被点击的消息位置，重新生成其他消息的位置
     const newMessages = messageElements.map(message => {
@@ -310,18 +306,8 @@ export default function Home() {
         // 特别调整右侧区域的分布，避免右侧过于空旷
         let x;
         
-        // 使用加权随机分布，增加右侧区域的消息密度
-        const randomFactor = Math.random();
-        if (randomFactor > 0.7) {
-          // 30%的概率分布在右侧1/3区域
-          x = maxX * 0.67 + Math.random() * (maxX * 0.33);
-        } else if (randomFactor > 0.4) {
-          // 30%的概率分布在中间1/3区域
-          x = maxX * 0.33 + Math.random() * (maxX * 0.33);
-        } else {
-          // 40%的概率分布在左侧1/3区域
-          x = Math.random() * (maxX * 0.33);
-        }
+        // 简单随机分布，确保消息可以覆盖整个屏幕
+          x = Math.random() * maxX;
         
         return {
           ...message,
@@ -534,7 +520,7 @@ export default function Home() {
       )}
       
       {/* 当前播放歌曲信息 - 手机适配位置 */}
-      {showMessages && isPlayingMusic && (
+      {showMessages && (
         <motion.div
           className="absolute bottom-6 left-6 bg-white/80 backdrop-blur-sm px-3 py-2 rounded-full shadow-md border border-pink-200 z-20 max-w-[60%]"
           initial={{ opacity: 0, x: -20 }}
