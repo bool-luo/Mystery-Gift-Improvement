@@ -49,110 +49,52 @@ export const LoveMessage: React.FC<LoveMessageProps> = ({
   
   return (
     <motion.div
-      className={`absolute ${borderRadius} p-5 ${bgColor} ${textColor} ${boxShadow} ${border} max-w-[300px] flex items-center backdrop-blur-sm cursor-pointer transition-all duration-300`}
+      className={`absolute ${borderRadius} p-4 ${bgColor} ${textColor} ${boxShadow} ${border} max-w-[200px] flex items-center backdrop-blur-sm cursor-pointer transition-all duration-300`}
       style={{ 
         width: `${width}px`,
         left: `${x}px`, 
         top: `${y}px`,
         zIndex: isTopMessage ? 100 : 10,
-        position: 'absolute'
+        position: 'absolute',
+        // 确保在移动设备上也有足够的最小宽度
+        minWidth: '100px'
       }}
       // 简化初始状态，使过渡更快速
-      initial={{ scale: 0.8, opacity: 0, rotate: 0 }} // 简化初始旋转，加快过渡
+      initial={{ scale: 0.8, opacity: 0 }}
       animate={{ 
         opacity: 1,
-        rotate: rotate,
-        scale: isTopMessage ? 1.1 : 1, // 简化缩放动画，去掉重复值
-        y: isTopMessage ? 0 : 0 // 移除上下浮动，专注于快速出现
+        scale: isTopMessage ? 1.1 : 1
       }}
-       transition={{ 
+      transition={{ 
         delay,
-        duration: 0.05, // 极小的动画持续时间，几乎瞬间出现
-        type: "spring",
-        bounce: 0, // 完全消除弹性，使动画立即完成
-        left: {
-          type: "spring",
-          stiffness: 2000, // 极大的刚度，位置瞬间到位
-          damping: 100
-        },
-        top: {
-          type: "spring",
-          stiffness: 2000, // 极大的刚度
-          damping: 100 // 高阻尼，确保立即稳定
-        },
-        rotate: {
-          repeat: Infinity,
-          duration: rotationDuration,
-          ease: "easeInOut"
-        },
-        scale: {
-          repeat: Infinity,
-          duration: scaleDuration,
-          ease: "easeInOut"
-        },
-        y: {
-          repeat: Infinity,
-          duration: yDuration,
-          ease: "easeInOut",
-          delay: yDelay
-        }
+        duration: 0.5, // 合理的动画持续时间
+        ease: "easeOut"
       }}
-       whileHover={{ 
+      whileHover={{ 
         scale: 1.1, 
         boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-        transition: { duration: 0.2 } // 添加hover过渡动画，使效果更丝滑
+        transition: { duration: 0.2 }
       }}
       onClick={onMessageClick}
       whileTap={{ scale: 0.95 }}
     >
-      {/* 装饰性图标 */}
-      <motion.i 
-        className={`fa-solid ${icon} mr-3 text-lg ${iconColor}`}
-        animate={{ 
-          scale: [1, 1.3, 1],
-        }}
-        transition={{ 
-          repeat: Infinity,
-          duration: iconScaleDuration,
-          ease: "easeInOut"
-        }}
-      />
+      {/* 装饰性图标 - 移除无限循环动画 */}
+      <i className={`fa-solid ${icon} mr-2 text-sm ${iconColor}`}></i>
       
       {/* 消息文本 */}
-      <p className="text-sm md:text-base font-medium leading-relaxed">{message}</p>
+      <p className="text-xs font-medium leading-relaxed">{message}</p>
       
-      {/* 固定装饰元素 - 右上角小爱心 */}
+      {/* 固定装饰元素 - 右上角小爱心 - 移除动画 */}
       {hasDecoration && (
-        <motion.div
-          className="absolute -top-2 -right-2"
-          animate={{ 
-            scale: [1, 1.2, 1],
-            rotate: [0, 10, 0, -10, 0]
-          }}
-          transition={{ 
-            repeat: Infinity,
-            duration: decorationDuration,
-            ease: "easeInOut"
-          }}
-        >
+        <div className="absolute -top-2 -right-2">
           <i className={`fa-solid fa-heart text-xs ${iconColor}`}></i>
-        </motion.div>
+        </div>
       )}
       
-      {/* 被置顶时显示的特殊效果 */}
+      {/* 被置顶时显示的特殊效果 - 简化动画 */}
       {isTopMessage && (
-        <motion.div
-          className="absolute -inset-1 bg-pink-500/20 rounded-full blur-md -z-10"
-          animate={{ 
-            scale: [1, 1.1, 1],
-            opacity: [0.6, 0.8, 0.6]
-          }}
-          transition={{
-            repeat: Infinity,
-            duration: 2,
-            ease: "easeInOut"
-          }}
-        />
+        <div className="absolute -inset-1 bg-pink-500/20 rounded-full blur-md -z-10">
+        </div>
       )}
     </motion.div>
   );
