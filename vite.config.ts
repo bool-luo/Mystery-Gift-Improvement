@@ -13,4 +13,14 @@ function getPlugins() {
 
 export default defineConfig({
   plugins: getPlugins(),
+  server: {
+    host: true,
+    port: 3000,
+    headers: {
+      'ngrok-skip-browser-warning': 'true'
+    },
+    allowedHosts: [
+      'unbewitchingly-untouching-kaylin.ngrok-free.dev' // 允许 ngrok 域名访问
+    ]
+  }
 });

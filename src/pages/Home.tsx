@@ -116,6 +116,10 @@ export default function Home() {
   
   // 存储当前置顶的消息ID
   const [topMessageId, setTopMessageId] = useState<number | null>(null);
+  // 存储已消散的消息ID列表
+  const [dissolvedMessageIds, setDissolvedMessageIds] = useState<Set<number>>(new Set());
+  // 存储正在消散的消息ID
+  const [messageBeingDissolved, setMessageBeingDissolved] = useState<number | null>(null);
   
   // 初始化音频元素
   useEffect(() => {
@@ -322,11 +326,29 @@ export default function Home() {
 
   // 处理消息框点击，将点击的消息置于顶层，并重新排列其他消息
   const handleMessageClick = (messageId: number) => {
+    // 如果点击的是新消息，且已经有置顶消息，则将旧的置顶消息标记为消散
+    if (topMessageId !== null && topMessageId !== messageId) {
+      // 设置正在消散的消息
+      setMessageBeingDissolved(topMessageId);
+      // 等待消散动画完成后，将消息添加到已消散列表中
+      setTimeout(() => {
+        const newDissolvedSet = new Set(dissolvedMessageIds);
+        newDissolvedSet.add(topMessageId);
+        setDissolvedMessageIds(newDissolvedSet);
+        setMessageBeingDissolved(null);
+        
+        // 只更新已消散消息的集合，不需要重新设置messageElements
+        // 通过在过滤条件中使用!dissolvedMessageIds.has(msg.id)，React会自动处理渲染
+      }, 1000); // 消散动画持续时间
+    }
+    
+    // 设置新的置顶消息
     setTopMessageId(messageId);
-    // 延迟重新排列其他消息，先让当前点击的消息置顶有一个过渡效果
-    setTimeout(() => {
-      regenerateOtherMessages(messageId);
-    }, 300);
+    
+    // 不再重新排列其他消息，只保留置顶效果
+    // setTimeout(() => {
+    //   regenerateOtherMessages(messageId);
+    // }, 300);
   };
 
   return (
@@ -445,7 +467,7 @@ export default function Home() {
 
    {/* 爱心消息展示区域 */}
    <AnimatePresence>
-     {showMessages && messageElements.filter(msg => msg.isVisible !== false).map((msg) => {
+     {showMessages && messageElements.filter(msg => msg.isVisible !== false && !dissolvedMessageIds.has(msg.id)).map((msg) => {
        const variant = messageVariants[msg.variant];
        return (
          <LoveMessage
@@ -466,6 +488,7 @@ export default function Home() {
            icon={msg.icon}
            hasDecoration={msg.hasDecoration}
            isTopMessage={topMessageId === msg.id}
+           isDissolving={messageBeingDissolved === msg.id}
            onMessageClick={() => handleMessageClick(msg.id)}
          />
        );
